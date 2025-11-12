@@ -2,6 +2,8 @@ import requests
 from datetime import datetime, timedelta
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
+
 
 today = datetime.now()
 week_ago = today - timedelta(days=7)
@@ -25,10 +27,12 @@ df = pd.DataFrame(
 )
 
 df["time_data"] = pd.to_datetime(df["time_data"])
+df["avg_temp"] = (df["max_temp_data"] + df["min_temp_data"]) / 2
+df = df.round(1)
 
 plt.figure(figsize=(10, 6))
 plt.plot(df["time_data"], df["max_temp_data"], label="Max Temp.")
-plt.plot(df["time_data"], df["min_temp_data"], label="Max Temp.")
+plt.plot(df["time_data"], df["min_temp_data"], label="Min Temp.")
 
 plt.xlabel("Date")
 plt.ylabel("Temperature in °C")
@@ -38,5 +42,12 @@ plt.legend()
 plt.xticks(rotation=45)
 plt.tight_layout()
 
-plt.savefig("weather_chart.png")
+if not os.path.exists("data"):
+    os.makedirs("data")
+
+df.to_csv("data/paris_weather.csv", index=False)
+plt.savefig("data/weather_chart.png")
 plt.show()
+
+print(f"Average temperature: {df['avg_temp'].mean():.1f}°C")
+print("Files saved in 'data' folder")
