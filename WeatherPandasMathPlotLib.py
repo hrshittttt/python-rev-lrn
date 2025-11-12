@@ -1,6 +1,7 @@
 import requests
 from datetime import datetime, timedelta
 import pandas as pd
+import matplotlib.pyplot as plt
 
 today = datetime.now()
 week_ago = today - timedelta(days=7)
@@ -18,11 +19,24 @@ daily_data = response["daily"]
 df = pd.DataFrame(
     {
         "time_data": daily_data["time"],
-        " max_temp_data": daily_data["temperature_2m_max"],
+        "max_temp_data": daily_data["temperature_2m_max"],
         "min_temp_data": daily_data["temperature_2m_min"],
     }
 )
 
 df["time_data"] = pd.to_datetime(df["time_data"])
 
-print(df)
+plt.figure(figsize=(10, 6))
+plt.plot(df["time_data"], df["max_temp_data"], label="Max Temp.")
+plt.plot(df["time_data"], df["min_temp_data"], label="Max Temp.")
+
+plt.xlabel("Date")
+plt.ylabel("Temperature in °C")
+plt.title("Paris weather in last 7 days")
+plt.legend()
+
+plt.xticks(rotation=45)
+plt.tight_layout()
+
+plt.savefig("weather_chart.png")
+plt.show()
